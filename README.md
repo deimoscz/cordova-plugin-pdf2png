@@ -7,7 +7,7 @@ The usage of plugin:
 example of usage:
 
 html:
-<img src='dummy.png' id='myImage' />
+```<img src='dummy.png' id='myImage' />```
 
 js:
 pdf2png.getPage("www/test.pdf",24,function(base64encodedPNG){
