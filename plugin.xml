@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cz.doublev.cordova.core.pdf2png"
+    version="0.1.0">
+
+    <name>Wurst</name>
+    <description>Cordova Plugin Returns PNG from local PDF page</description>
+    <license>Apache 2.0</license>
+    <keywords>cordova,plugin,pdf,png</keywords>
+
+    <!-- ios -->
+    <platform name="ios">
+        <config-file target="config.xml" parent="/*">
+            <feature name="Pdf2png">
+                <param name="ios-package" value="Pdf2png"/>
+                <param name="onload" value="true" />
+            </feature>
+        </config-file>
+
+        <js-module src="www/Pdf2png.js" name="Pdf2png">
+            <clobbers target="pdf2png" />
+        </js-module>
+
+        <header-file src="src/ios/Pdf2png.h" />
+        <source-file src="src/ios/Pdf2png.m" />
+        
+    </platform>
+
+
+</plugin>
