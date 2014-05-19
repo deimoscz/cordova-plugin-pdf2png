@@ -27,5 +27,7 @@
 - (void)onMemoryWarning;
 - (void)onReset;
 - (void)dispose;
+- (void)getPage:(CDVInvokedUrlCommand*)command;
+- (void)getPageInBackground:(CDVInvokedUrlCommand*)command;
   	
 @end
