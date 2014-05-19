@@ -22,10 +22,10 @@ pdf2png.getPage("www/test.pdf",24,function(base64encodedPNG){
 
 this will load page #24 of pdf test.pdf that is stored in www folder into img element with id "myImage",
 
-## pdf2png.getPageInBackground 
+## pdf2png.getPageInBackground(pdf,page,callback)
 does the same thing in background, you should probably use that one
 
-
+--------------------------------
 
 TODO:
 * Image size to return
