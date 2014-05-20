@@ -3,7 +3,7 @@ cordova-plugin-pdf2png
 This is cordova v3.0+ plugin that allows user to get png base64 image from any page of pdf file.
 
 The usage of plugin:
-## pdf2png.getPage({pdf:urlToPDF,page:pageNumber,success:function(res){},fail:function(res){},width:pngWidth,height:pngHeight}) 
+## pdf2png.getPage(obj) 
 gets base64 encoded string from page of pdf file
 
 example of usage:
