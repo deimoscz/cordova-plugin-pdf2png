@@ -5,7 +5,7 @@
     version="0.1.0">
 
     <name>PDF2PNG</name>
-    <description>Cordova Plugin Returns PNG from local PDF page</description>
+    <description>Cordova Plugin Returns converted into base64 format PNG from local PDF page</description>
     <license>Apache 2.0</license>
     <keywords>cordova,plugin,pdf,png,base64</keywords>
     <author>Lisunov Ilia (developer@ipads.cz)</author>
