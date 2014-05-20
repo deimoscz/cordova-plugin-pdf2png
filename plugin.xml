@@ -7,7 +7,12 @@
     <name>PDF2PNG</name>
     <description>Cordova Plugin Returns PNG from local PDF page</description>
     <license>Apache 2.0</license>
-    <keywords>cordova,plugin,pdf,png</keywords>
+    <keywords>cordova,plugin,pdf,png,base64</keywords>
+    <author>Lisunov Ilia (developer@ipads.cz)</author>
+    
+    <engines>
+        <engine name="cordova" version=">=3.0.0" />
+    </engines>    
 
     <!-- ios -->
     <platform name="ios">
