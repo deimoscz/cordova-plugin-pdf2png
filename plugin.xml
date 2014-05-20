@@ -4,7 +4,7 @@
     id="cz.doublev.cordova.core.pdf2png"
     version="0.1.0">
 
-    <name>Wurst</name>
+    <name>PDF2PNG</name>
     <description>Cordova Plugin Returns PNG from local PDF page</description>
     <license>Apache 2.0</license>
     <keywords>cordova,plugin,pdf,png</keywords>
