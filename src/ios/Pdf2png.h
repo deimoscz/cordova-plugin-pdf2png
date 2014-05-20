@@ -28,6 +28,7 @@
 - (void)onReset;
 - (void)dispose;
 - (void)getPage:(CDVInvokedUrlCommand*)command;
-- (void)getPageInBackground:(CDVInvokedUrlCommand*)command;
+- (void)getPageInForeground:(CDVInvokedUrlCommand*)command;
+- (void)closePDF:(CDVInvokedUrlCommand*)command;
   	
 @end

@@ -20,17 +20,28 @@
 #import "Pdf2png.h"
 /* #import "CDV.h"
 */
+
 @implementation Pdf2png
+
+static CGPDFDocumentRef openedPdf;
+static NSString* openedPdfURL=nil;
 
 - (void)pluginInitialize {
     [super pluginInitialize];
     NSLog(@"Hello World Pdf2png, init");
 }
 
+
 - (void)echoTest:(CDVInvokedUrlCommand*)command {
     NSLog(@"Pdf2png, command");
     id message = [command.arguments objectAtIndex:0];
-    NSLog(@"Pdf2png, parameter <%@>", message);
+    id message2 = [command.arguments objectAtIndex:1];
+    NSLog(@"Pdf2png, parameter 1 <%@>", message);
+    NSLog(@"Pdf2png, parameter 2 <%@>", message2);
+
+    if (![message2 boolValue]) NSLog(@"Pdf2png, parameter 2 <%@> IS FUCKing null", message2);
+    if (![message boolValue]) NSLog(@"Pdf2png, parameter 1 <%@> IS FUCKing null", message2);
+
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
@@ -53,7 +64,7 @@
     NSLog(@"return from backgroundJobTest");
 }
 
-- (NSString *)buildThumbnailImage:(CGPDFDocumentRef)pdfDocument pageNum:(int *)pageNum
+- (NSString *)buildThumbnailImage:(CGPDFDocumentRef)pdfDocument pageNum:(int *)pageNum pageWidth:(int *)pageWidth pageHeight:(int *)pageHeight
 {
 
     BOOL hasRetinaDisplay = FALSE;  // by default
@@ -74,8 +85,8 @@
         hasRetinaDisplay = FALSE;
     }
 
-    size_t imageWidth = 1152;  // width of thumbnail in points
-    size_t imageHeight = 1536;  // height of thumbnail in points
+    size_t imageWidth = pageWidth;  // width of thumbnail in points
+    size_t imageHeight = pageHeight;  // height of thumbnail in points
 
     if (hasRetinaDisplay)
     {
@@ -110,7 +121,6 @@
     CGContextConcatCTM(theContext, shrinkingTransform);
 
     CGContextDrawPDFPage(theContext, pdfPage);  // draw the pdfPage into the bitmap context
-    CGPDFDocumentRelease(pdfDocument);
 
     //
     // create the CGImageRef (and thence the UIImage) from the context (with its bitmap of the pdf page):
@@ -141,6 +151,8 @@
     NSString *encodedString = [UIImagePNGRepresentation(theUIImage) base64Encoding];
 
     CFRelease(theCGImageRef);
+    // theUIImage=nil;
+
     return encodedString;
 }
 
@@ -149,14 +161,6 @@
 CGPDFDocumentRef MyGetPDFDocumentRef(NSString *inputPDFFileURL)
 {
     NSString *inputPDFFile = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:inputPDFFileURL];
-
-    // NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
-    //                                                       NSUserDomainMask, YES);
-    // NSString *localDocumentsDirectory = [paths objectAtIndex:0];
-    // NSString *pdfFileName = @"example.pdf";
-    // NSString *localDocumentsDirectoryPdfFilePath = [localDocumentsDirectory  
-    //                                  stringByAppendingPathComponent:pdfFileName];
-    // pdfUrl = [NSURL fileURLWithPath:localDocumentsDirectoryPdfFilePath];
 
     const char *inputPDFFileAsCString = [inputPDFFile cStringUsingEncoding:NSASCIIStringEncoding];
     //NSLog(@"expecting pdf file to exist at this pathname: \"%s\"", inputPDFFileAsCString);
@@ -178,33 +182,90 @@ CGPDFDocumentRef MyGetPDFDocumentRef(NSString *inputPDFFileURL)
     return document;
 }
 
-- (void)getPage:(CDVInvokedUrlCommand*)command {
+- (void)openPDF:(CDVInvokedUrlCommand*)command {
+    NSLog(@"Pdf2png, command");
+    id message = [command.arguments objectAtIndex:0];
+    NSLog(@"Pdf2png, open pdf <%@>", message);
+    openedPdf=MyGetPDFDocumentRef(message);
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"ok"];
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];    
+}
+
+- (void)getPageInForeground:(CDVInvokedUrlCommand*)command {
     NSLog(@"Pdf2png, command");
     id pdfFile = [command.arguments objectAtIndex:0];
-    id pageNumObj = [command.arguments objectAtIndex:1];
-    int pageNum = [pageNumObj intValue];
-    // NSLog(@"Pdf2png, load file <%@> page # <%@>", pdfFile, pageNum);
+    int pageNum = [[command.arguments objectAtIndex:1] intValue];
+    int pageWidth = [[command.arguments objectAtIndex:2] intValue];
+    int pageHeight = [[command.arguments objectAtIndex:3] intValue];
+    bool autoRelease = [[command.arguments objectAtIndex:4] boolValue];
+    // int pageNum = [pageNumObj intValue];
 
-    //To be called in the cellForItemAtIndexPath method or a similar method where you want to create a thumbnail for the image:
-    // NSString *pdfName = [NSString stringWithFormat:@"%@.pdf", fileNameWithoutExtension];
-    NSString *pdfPageBase64png = [self buildThumbnailImage:MyGetPDFDocumentRef(pdfFile) pageNum:pageNum];
+    if (![openedPdfURL isEqualToString:pdfFile]) {
+        if (openedPdfURL!=nil) {
+            CGPDFDocumentRelease(openedPdf);
+            NSLog(@"Pdf2png, release of PDF: <%@> <%@>", openedPdfURL, pdfFile);
+        }
+        openedPdf=MyGetPDFDocumentRef(pdfFile);
+        openedPdfURL=pdfFile;
+    }
+    NSString *pdfPageBase64png = [self buildThumbnailImage:openedPdf pageNum:pageNum pageWidth:pageWidth pageHeight:pageHeight];   
+
+    if (autoRelease) {
+        if (openedPdfURL!=nil) {
+            CGPDFDocumentRelease(openedPdf);
+            NSLog(@"Pdf2png, release of PDF: <%@> <%@>", openedPdfURL, pdfFile);        
+        }
+        openedPdfURL=nil;
+    }
 
     CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:pdfPageBase64png];
 
     [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
 }
 
-- (void)getPageInBackground:(CDVInvokedUrlCommand*)command {
+- (void)closePDF:(CDVInvokedUrlCommand*)command {
+    
+    if (openedPdfURL!=nil) {
+        CGPDFDocumentRelease(openedPdf);
+        NSLog(@"Pdf2png, release of PDF: <%@>", openedPdfURL);        
+    }
+    openedPdfURL=nil;    
+
+    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:@"PDF closed"];
+
+    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];        
+}
+
+- (void)getPage:(CDVInvokedUrlCommand*)command {
     NSLog(@"Pdf2png, backgroundJobTest");
     [self.commandDelegate runInBackground:^{
+        NSLog(@"Pdf2png, command");
         id pdfFile = [command.arguments objectAtIndex:0];
-        id pageNumObj = [command.arguments objectAtIndex:1];
-        int pageNum = [pageNumObj intValue];
-        // NSLog(@"Pdf2png, load file <%@> page # <%@>", pdfFile, pageNum);
+        int pageNum = [[command.arguments objectAtIndex:1] intValue];
+        int pageWidth = [[command.arguments objectAtIndex:2] intValue];
+        int pageHeight = [[command.arguments objectAtIndex:3] intValue];
+        bool autoRelease = [[command.arguments objectAtIndex:4] boolValue];
+        // int pageNum = [pageNumObj intValue];
 
-        //To be called in the cellForItemAtIndexPath method or a similar method where you want to create a thumbnail for the image:
-        // NSString *pdfName = [NSString stringWithFormat:@"%@.pdf", fileNameWithoutExtension];
-        NSString *pdfPageBase64png = [self buildThumbnailImage:MyGetPDFDocumentRef(pdfFile) pageNum:pageNum];
+        if (![openedPdfURL isEqualToString:pdfFile]) {
+            if (openedPdfURL!=nil) {
+                CGPDFDocumentRelease(openedPdf);
+                NSLog(@"Pdf2png, release of PDF: <%@> <%@>", openedPdfURL, pdfFile);
+            }
+            openedPdf=MyGetPDFDocumentRef(pdfFile);
+            openedPdfURL=pdfFile;
+        }
+        NSString *pdfPageBase64png = [self buildThumbnailImage:openedPdf pageNum:pageNum pageWidth:pageWidth pageHeight:pageHeight];
+        
+        
+
+        if (autoRelease) {
+            if (openedPdfURL!=nil) {
+                CGPDFDocumentRelease(openedPdf);
+                NSLog(@"Pdf2png, release of PDF: <%@> <%@>", openedPdfURL, pdfFile);        
+            }
+            openedPdfURL=nil;
+        }
 
         CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:pdfPageBase64png];
 
