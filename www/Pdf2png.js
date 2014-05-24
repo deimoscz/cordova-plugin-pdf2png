@@ -1,7 +1,7 @@
 cordova.define("cz.doublev.cordova.core.pdf2png.Pdf2png", function(require, exports, module) { var exec = require('cordova/exec');
 
 /* constructor */
-function Pdf2png() {}
+Pdf2png=function() {};
 
 Pdf2png.prototype.dummy = function() {
         exec(
@@ -45,8 +45,4 @@ Pdf2png.prototype.closePDF = function(success,fail){
         , "Pdf2png", "closePDF", []);
 };
 
-
-var pdf2png = new Pdf2png();
-module.exports = pdf2png;
-
-});
+module.exports = Pdf2png;
