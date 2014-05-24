@@ -117,11 +117,17 @@ static NSString* openedPdfURL=nil;
 
     CGAffineTransform shrinkingTransform =
     CGPDFPageGetDrawingTransform(pdfPage, kCGPDFMediaBox, CGRectMake(0, 0, imageWidth, imageHeight), 0, YES);
+    CGRect smallPageRect = CGPDFPageGetBoxRect(pdfPage, kCGPDFCropBox);
+    CGFloat pdfScale = imageWidth/smallPageRect.size.width;
+    CGFloat pdfScaleY = imageHeight/smallPageRect.size.height;
+
+    shrinkingTransform = CGAffineTransformScale(shrinkingTransform, pdfScale, pdfScaleY);
+    shrinkingTransform.tx = 0;
+    shrinkingTransform.ty = 0;
 
     CGContextConcatCTM(theContext, shrinkingTransform);
 
     CGContextDrawPDFPage(theContext, pdfPage);  // draw the pdfPage into the bitmap context
-
     //
     // create the CGImageRef (and thence the UIImage) from the context (with its bitmap of the pdf page):
     //
