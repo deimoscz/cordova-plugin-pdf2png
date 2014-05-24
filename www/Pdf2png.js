@@ -1,6 +1,3 @@
-cordova.define("cz.doublev.cordova.core.pdf2png.Pdf2png", function(require, exports, module) { var exec = require('cordova/exec');
-
-/* constructor */
 Pdf2png=function() {};
 
 Pdf2png.prototype.dummy = function() {
