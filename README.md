@@ -26,6 +26,7 @@ pdf2png.getPage({
     },
     width: 300,
     height: 400,
+    autoRelease:false,
 });
 ```
 
