@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-    id="cz.doublev.cordova.core.pdf2png"
-    version="0.2.0">
+    id="cz.doublev.cordova.plugin.pdf2png"
+    version="0.2.5">
 
     <name>PDF2PNG</name>
     <description>Cordova Plugin Returns converted into base64 format PNG from local PDF page</description>
