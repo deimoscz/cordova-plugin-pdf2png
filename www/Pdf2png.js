@@ -1,3 +1,5 @@
+exec = require('cordova/exec');
+
 Pdf2png=function() {};
 
 Pdf2png.prototype.dummy = function() {
