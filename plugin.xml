@@ -2,10 +2,10 @@
 
 <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
     id="cz.doublev.cordova.plugin.pdf2png"
-    version="0.2.5">
+    version="0.3.0">
 
     <name>PDF2PNG</name>
-    <description>Cordova Plugin Returns converted into base64 format PNG from local PDF page</description>
+    <description>Cordova Plugin Returns converted into base64 format PNG from local PDF page. Can be used for creating thumbnails of PDF pages without need to store full sized images.</description>
     <license>Apache 2.0</license>
     <keywords>cordova,plugin,pdf,png,base64</keywords>
     <author>Lisunov Ilia (developer@ipads.cz)</author>

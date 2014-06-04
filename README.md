@@ -30,7 +30,10 @@ pdf2png.getPage({
 });
 ```
 
-this will load 300x400px PNG of page #24 of pdf test.pdf that is stored in www folder into img element with id "myImage",
+This will load 300x400px PNG of page #24 of pdf test.pdf that is stored in www folder into img element with id "myImage",
+The autoRelease property if set to true, closes pdf and releases memory everytime you request a page.
+If set to false (by default) - it leaves pdf opened so next time you get a page from the same pdf for a less amount of time.
+Anyway, it will close current pdf automatically if you request a page from another pdf.
 
 ## pdf2png.closePDF();
 closes PDF and releases memory.
@@ -45,3 +48,4 @@ does the same thing in foreground, you should probably NOT use this one
 TODO:
 * Comments
 * Thanks to other authors
+* PNG | JPEG formats

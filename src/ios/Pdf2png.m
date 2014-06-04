@@ -28,43 +28,11 @@ static NSString* openedPdfURL=nil;
 
 - (void)pluginInitialize {
     [super pluginInitialize];
-    NSLog(@"Hello World Pdf2png, init");
+    NSLog(@"Initializing Pdf2png, init");
 }
 
 
-- (void)echoTest:(CDVInvokedUrlCommand*)command {
-    NSLog(@"Pdf2png, command");
-    id message = [command.arguments objectAtIndex:0];
-    id message2 = [command.arguments objectAtIndex:1];
-    NSLog(@"Pdf2png, parameter 1 <%@>", message);
-    NSLog(@"Pdf2png, parameter 2 <%@>", message2);
-
-    if (![message2 boolValue]) NSLog(@"Pdf2png, parameter 2 <%@> IS FUCKing null", message2);
-    if (![message boolValue]) NSLog(@"Pdf2png, parameter 1 <%@> IS FUCKing null", message2);
-
-    CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:message];
-
-    [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-}
-
-- (void)backgroundJobTest:(CDVInvokedUrlCommand*)command {
-    NSLog(@"Pdf2png, backgroundJobTest");
-    [self.commandDelegate runInBackground:^{
-	NSString* payload = nil;
-	
-	// Some blocking logic...
-	NSLog(@"Pdf2png, sleep for 5s");
-	[NSThread sleepForTimeInterval:5.0];
-	NSLog(@"Pdf2png, sleep done");
-	
-	CDVPluginResult* pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:payload];
-	// The sendPluginResult method is thread-safe.
-	[self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
-    }];
-    NSLog(@"return from backgroundJobTest");
-}
-
-- (NSString *)buildThumbnailImage:(CGPDFDocumentRef)pdfDocument pageNum:(int *)pageNum pageWidth:(int *)pageWidth pageHeight:(int *)pageHeight
+- (NSString *)buildThumbnailImage:(CGPDFDocumentRef)pdfDocument pageNum:(int)pageNum pageWidth:(int)pageWidth pageHeight:(int)pageHeight
 {
 
     BOOL hasRetinaDisplay = FALSE;  // by default
@@ -109,7 +77,7 @@ static NSString* openedPdfURL=nil;
     bzero(bitmapData, imageWidth * imageHeight * bytesPerPixel);
 
     CGContextRef theContext = CGBitmapContextCreate(bitmapData, imageWidth, imageHeight, bitsPerComponent, bytesPerRow,
-                                                    CGColorSpaceCreateDeviceRGB(), kCGImageAlphaPremultipliedLast);
+                                                    CGColorSpaceCreateDeviceRGB(), (CGBitmapInfo) kCGImageAlphaPremultipliedLast);
 
     //CGPDFDocumentRef pdfDocument = MyGetPDFDocumentRef();  // NOTE: you will need to modify this line to supply the CGPDFDocumentRef for your file here...
     // NSLog(@"Pdf2page # <%@>", pageNum);    
@@ -168,7 +136,7 @@ CGPDFDocumentRef MyGetPDFDocumentRef(NSString *inputPDFFileURL)
 {
     NSString *inputPDFFile = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:inputPDFFileURL];
 
-    const char *inputPDFFileAsCString = [inputPDFFile cStringUsingEncoding:NSASCIIStringEncoding];
+    const char *inputPDFFileAsCString = [inputPDFFile cStringUsingEncoding:NSUTF8StringEncoding];
     //NSLog(@"expecting pdf file to exist at this pathname: \"%s\"", inputPDFFileAsCString);
 
     CFStringRef path = CFStringCreateWithCString(NULL, inputPDFFileAsCString, kCFStringEncodingUTF8);
@@ -181,7 +149,7 @@ CGPDFDocumentRef MyGetPDFDocumentRef(NSString *inputPDFFileURL)
 
     if (CGPDFDocumentGetNumberOfPages(document) == 0)
     {
-        printf("Warning: No pages in pdf file \"%s\" or pdf file does not exist at this path \"%s\" \n", inputPDFFileAsCString, path);
+        printf("Warning: No pages in pdf file \"%s\" or pdf file does not exist\n", inputPDFFileAsCString);
         return NULL;
     }
 
@@ -214,7 +182,7 @@ CGPDFDocumentRef MyGetPDFDocumentRef(NSString *inputPDFFileURL)
         openedPdf=MyGetPDFDocumentRef(pdfFile);
         openedPdfURL=pdfFile;
     }
-    NSString *pdfPageBase64png = [self buildThumbnailImage:openedPdf pageNum:pageNum pageWidth:pageWidth pageHeight:pageHeight];   
+    NSString *pdfPageBase64png = [self buildThumbnailImage:openedPdf pageNum:pageNum pageWidth:pageWidth pageHeight:pageHeight];
 
     if (autoRelease) {
         if (openedPdfURL!=nil) {
@@ -243,7 +211,6 @@ CGPDFDocumentRef MyGetPDFDocumentRef(NSString *inputPDFFileURL)
 }
 
 - (void)getPage:(CDVInvokedUrlCommand*)command {
-    NSLog(@"Pdf2png, backgroundJobTest");
     [self.commandDelegate runInBackground:^{
         NSLog(@"Pdf2png, command");
         id pdfFile = [command.arguments objectAtIndex:0];
@@ -277,7 +244,6 @@ CGPDFDocumentRef MyGetPDFDocumentRef(NSString *inputPDFFileURL)
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
     }];
-    NSLog(@"return from backgroundJobTest");
 }
 
 - (void)onAppTerminate {
