@@ -22,7 +22,6 @@
 @interface Pdf2png : CDVPlugin
 
 - (void)pluginInitialize;
-- (void)echoTest:(CDVInvokedUrlCommand*)command;
 - (void)onAppTerminate;
 - (void)onMemoryWarning;
 - (void)onReset;
@@ -30,5 +29,5 @@
 - (void)getPage:(CDVInvokedUrlCommand*)command;
 - (void)getPageInForeground:(CDVInvokedUrlCommand*)command;
 - (void)closePDF:(CDVInvokedUrlCommand*)command;
-  	
+
 @end
